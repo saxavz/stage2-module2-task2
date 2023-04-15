@@ -23,10 +23,11 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         HttpSession session = req.getSession();
-        if(session.getAttribute("user") == null){
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
-        }
+        if(session.isNew() || session.getAttribute("user") == null){
+            req.getRequestDispatcher("/login.jsp").forward(req, resp);
+        } else {
             req.getRequestDispatcher("user/hello.jsp").forward(req, resp);
+        }
     }
 
     @Override
@@ -34,7 +35,11 @@ public class LoginServlet extends HttpServlet {
         String userLogin = req.getParameter("login");
         String userPassword = req.getParameter("password");
 
-        if(userPassword != null && userPassword.length() > 0 && Users.getInstance().getUsers().stream().anyMatch( u -> u.equals(userLogin))){
+        if(userLogin != null &&
+                userPassword != null &&
+                userPassword.length() > 0 &&
+                Users.getInstance().getUsers().stream().anyMatch( u -> u.equals(userLogin))
+        ){
             req.getSession().setAttribute("user", userLogin);
             System.out.println("UserMatched");
         }
